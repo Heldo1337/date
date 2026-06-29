@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unser Jahrestag ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --rose:    #C2748A;
+    --rose-lt: #F2E4E8;
+    --ink:     #2B1F25;
+    --muted:   #7A5F68;
+    --cream:   #FAF6F1;
+    --gold:    #B89A72;
+  }
+  html, body {
+    height: 100%;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+  .screen {
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .screen.active { display: flex; }
+  .petals {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .petal {
+    position: absolute;
+    top: -60px;
+    background: var(--rose-lt);
+    border-radius: 60% 40% 50% 50% / 60% 50% 40% 50%;
+    opacity: 0;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+    5%   { opacity: 0.6; }
+    95%  { opacity: 0.4; }
+    100% { transform: translateY(110vh) rotate(360deg) scale(0.6); opacity: 0; }
+  }
+  .eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 6.5vw, 3.6rem);
+    font-weight: 300;
+    line-height: 1.18;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+  h1 em { font-style: italic; color: var(--rose); }
+  .sub {
+    font-size: 0.92rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+    line-height: 1.7;
+  }
+  .card {
+    background: #fff;
+    border: 0.5px solid #e8dde2;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    max-width: 460px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.5s ease both;
+  }
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 1.2rem auto 1.6rem;
+    opacity: 0.6;
+  }
+  .years-badge {
+    display: inline-block;
+    background: var(--rose-lt);
+    color: var(--rose);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-style: italic;
+    padding: 0.35rem 1.1rem;
+    border-radius: 50px;
+    margin-bottom: 1.4rem;
+    border: 0.5px solid #e8c8d2;
+  }
+  .btn-yes {
+    display: inline-block;
+    padding: 0.8rem 2.8rem;
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Jost', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-yes:hover { background: #b5627a; transform: scale(1.03); }
+  .btn-no {
+    display: inline-block;
+    padding: 0.7rem 1.8rem;
+    background: #fff;
+    color: var(--muted);
+    border: 1.5px solid #c4a8b2;
+    border-radius: 50px;
+    font-family: 'Jost', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .btn-no:hover { border-color: var(--rose); color: var(--rose); }
+  .btn-arena {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+  }
+  .btn-arena.desktop-mode .btn-no { position: absolute; transition: left 0.08s, top 0.08s, font-size 0.2s, opacity 0.3s; }
+  .btn-arena.mobile-mode { flex-direction: column; height: auto; gap: 1rem; padding: 0.5rem 0; }
+  .btn-arena.mobile-mode .btn-no { position: relative; transition: transform 0.18s cubic-bezier(.17,.67,.35,1.4), font-size 0.2s, opacity 0.3s; }
+  .escape-msg {
+    font-size: 0.78rem;
+    color: var(--rose);
+    font-style: italic;
+    min-height: 1.2em;
+    margin-top: 0.3rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    position: relative;
+    z-index: 1;
+  }
+  .escape-msg.show { opacity: 1; }
+
+  .option-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 1.2rem 0;
+    width: 100%;
+  }
+  .option-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
+  .option-pill {
+    padding: 0.9rem 0.8rem;
+    border: 0.5px solid #e0d4d8;
+    border-radius: 12px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    background: #fff;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .option-pill:hover { border-color: var(--rose); color: var(--rose); }
+  .option-pill.disabled { opacity: 0.28; cursor: not-allowed; pointer-events: none; }
+  .option-pill.selected { border-color: var(--rose); background: var(--rose-lt); color: var(--rose); }
+  .option-pill .pill-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .btn-next {
+    display: inline-block;
+    padding: 0.75rem 2.5rem;
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Jost', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, opacity 0.25s;
+    opacity: 0;
+    pointer-events: none;
+    margin-top: 0.6rem;
+  }
+  .btn-next.visible { opacity: 1; pointer-events: all; }
+  .btn-next:hover { background: #b5627a; transform: scale(1.03); }
+
+  .info-box {
+    background: var(--rose-lt);
+    border: 0.5px solid #e8c8d2;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.2rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .heart-big {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    animation: heartbeat 1.2s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14%  { transform: scale(1.15); }
+    28%  { transform: scale(1); }
+    42%  { transform: scale(1.1); }
+    56%  { transform: scale(1); }
+  }
+  .summary-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    color: var(--muted);
+    margin: 0.3rem 0;
+    font-style: italic;
+  }
+  .summary-line strong { color: var(--rose); font-style: normal; font-weight: 400; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="petals" id="petals"></div>
+
+<!-- SCREEN 1: Frage -->
+<div class="screen active" id="s1">
+  <div class="card">
+    <div class="years-badge">5 Jahre zusammen ♡</div>
+    <p class="eyebrow">Unser Jahrestag</p>
+    <h1>Willst du ihn<br><em>mit mir feiern?</em></h1>
+    <div class="divider"></div>
+    <p class="sub">Ich hab mir etwas für uns überlegt.</p>
+    <div class="btn-arena" id="arena">
+      <button class="btn-yes" onclick="goTo('s2')">Ja, natürlich ♡</button>
+      <button class="btn-no" id="noBtn">Lieber nicht</button>
+    </div>
+    <p class="escape-msg" id="escMsg"></p>
+  </div>
+</div>
+
+<!-- SCREEN 2: Was machen -->
+<div class="screen" id="s2">
+  <div class="card">
+    <p class="eyebrow">Schritt 1 von 2</p>
+    <h1>Was sollen<br><em>wir machen?</em></h1>
+    <div class="divider"></div>
+    <div class="option-grid">
+      <div class="option-pill disabled"><span class="pill-label">Aktivität</span>Kino</div>
+      <div class="option-pill" onclick="selectAct(this)"><span class="pill-label">Aktivität</span>Essen gehen</div>
+      <div class="option-pill disabled"><span class="pill-label">Aktivität</span>Spazieren</div>
+      <div class="option-pill disabled"><span class="pill-label">Aktivität</span>Bowling</div>
+    </div>
+    <button class="btn-next" id="nextAct" onclick="goTo('s3')">Weiter →</button>
+  </div>
+</div>
+
+<!-- SCREEN 3: Uhrzeit -->
+<div class="screen" id="s3">
+  <div class="card">
+    <p class="eyebrow">Schritt 2 von 2</p>
+    <h1>Um wie viel Uhr<br><em>bist du fertig?</em></h1>
+    <div class="divider"></div>
+    <div class="info-box">
+      Komm nach der Arbeit direkt zu mir —<br>ich reserviere uns einen Tisch. ♡
+    </div>
+    <div class="option-grid three-col">
+      <div class="option-pill" onclick="selectTime(this, '17:30 Uhr')">
+        <span class="pill-label">Uhrzeit</span>17:30
+      </div>
+      <div class="option-pill" onclick="selectTime(this, '18:00 Uhr')">
+        <span class="pill-label">Uhrzeit</span>18:00
+      </div>
+      <div class="option-pill" onclick="selectTime(this, '18:30 Uhr')">
+        <span class="pill-label">Uhrzeit</span>18:30
+      </div>
+    </div>
+    <button class="btn-next" id="nextTime" onclick="goTo('s4')">Bestätigen →</button>
+  </div>
+</div>
+
+<!-- SCREEN 4: Erfolg -->
+<div class="screen" id="s4">
+  <div class="card">
+    <div class="heart-big">♡</div>
+    <p class="eyebrow">Es ist offiziell</p>
+    <h1><em>Ich freu mich<br>so sehr auf dich!</em></h1>
+    <div class="divider"></div>
+    <p class="summary-line">Was: <strong>Essen gehen</strong></p>
+    <p class="summary-line">Wann: <strong id="summaryTime">Freitag</strong></p>
+    <p class="summary-line">Wo: <strong>Direkt zu mir ♡</strong></p>
+    <p class="sub" style="margin-top:1.5rem;">5 Jahre — und ich freu mich jedes Mal<br>genauso sehr, dich zu sehen.</p>
+  </div>
+</div>
+
+<script>
+  const pc = document.getElementById('petals');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.cssText = `left:${Math.random()*100}vw;animation-duration:${8+Math.random()*10}s;animation-delay:${Math.random()*12}s;width:${8+Math.random()*8}px;height:${10+Math.random()*10}px`;
+    pc.appendChild(p);
+  }
+
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const arena = document.getElementById('arena');
+  const noBtn = document.getElementById('noBtn');
+  const escMsg = document.getElementById('escMsg');
+  const phrases = ['Wirklich? 🥺','Nochmal?!','Komm schon ♡','Der Button leidet...','Bitte 🙏','Ich geb nicht auf!','Das zähle ich mir!'];
+  let noCount = 0;
+
+  arena.classList.add(isTouch ? 'mobile-mode' : 'desktop-mode');
+
+  function flash(msg) {
+    escMsg.textContent = msg;
+    escMsg.classList.add('show');
+    clearTimeout(escMsg._t);
+    escMsg._t = setTimeout(() => escMsg.classList.remove('show'), 1800);
+  }
+  function shrink() {
+    if (noCount >= 4) noBtn.style.fontSize = Math.max(9, 16 - noCount * 1.2) + 'px';
+    if (noCount >= 9) { noBtn.style.opacity = '0'; noBtn.style.pointerEvents = 'none'; }
+    flash(phrases[Math.min(noCount - 1, phrases.length - 1)]);
+  }
+
+  if (!isTouch) {
+    noBtn.addEventListener('click', function() {
+      noCount++;
+      const aw = arena.offsetWidth, ah = arena.offsetHeight;
+      const bw = noBtn.offsetWidth,  bh = noBtn.offsetHeight;
+      noBtn.style.left = Math.max(0, Math.random() * (aw - bw)) + 'px';
+      noBtn.style.top  = Math.max(0, Math.random() * (ah - bh)) + 'px';
+      shrink();
+    });
+  } else {
+    const dirs = ['translate(-110px,-20px)','translate(110px,-20px)','translate(-70px,45px)','translate(70px,45px)','translate(0,-65px)','translate(-130px,15px)','translate(130px,15px)'];
+    noBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      noCount++;
+      noBtn.style.transform = dirs[noCount % dirs.length];
+      setTimeout(() => { noBtn.style.transform = 'translate(0,0)'; }, 500);
+      shrink();
+    });
+  }
+
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function selectAct(el) {
+    el.classList.toggle('selected');
+    document.getElementById('nextAct').classList.toggle('visible', el.classList.contains('selected'));
+  }
+
+  function selectTime(el, val) {
+    document.querySelectorAll('#s3 .option-pill').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('summaryTime').textContent = 'Freitag, ' + val;
+    document.getElementById('nextTime').classList.add('visible');
+  }
+</script>
+</body>
+</html>
