@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ich hab da eine Frage...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose:    #C2748A;
+    --rose-lt: #F2E4E8;
+    --ink:     #2B1F25;
+    --muted:   #7A5F68;
+    --cream:   #FAF6F1;
+    --gold:    #B89A72;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── CANVAS ─────────────────────────────────────── */
+  .screen {
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .screen.active { display: flex; }
+
+  /* Floating petals background */
+  .petals {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .petal {
+    position: absolute;
+    top: -60px;
+    width: 10px;
+    height: 14px;
+    background: var(--rose-lt);
+    border-radius: 60% 40% 50% 50% / 60% 50% 40% 50%;
+    opacity: 0;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(0) rotate(0deg) scale(1);   opacity: 0; }
+    5%   { opacity: 0.6; }
+    95%  { opacity: 0.4; }
+    100% { transform: translateY(110vh) rotate(360deg) scale(0.6); opacity: 0; }
+  }
+
+  /* ── TYPOGRAPHY ──────────────────────────────────── */
+  .eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--rose);
+  }
+  .sub {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── CARD ────────────────────────────────────────── */
+  .card {
+    background: #fff;
+    border: 0.5px solid #e8dde2;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    max-width: 460px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 1.2rem auto;
+    opacity: 0.6;
+  }
+
+  /* ── BUTTONS ─────────────────────────────────────── */
+  .btn-yes {
+    display: inline-block;
+    padding: 0.75rem 2.5rem;
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Jost', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-yes:hover { background: #b5627a; transform: scale(1.03); }
+
+  .btn-no {
+    display: inline-block;
+    padding: 0.65rem 2rem;
+    background: transparent;
+    color: var(--muted);
+    border: 0.5px solid #d4c4ca;
+    border-radius: 50px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    position: absolute;
+    transition: font-size 0.2s, opacity 0.2s;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .btn-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
+    width: 100%;
+  }
+
+  /* ── SCREEN 2 – DATUM ────────────────────────────── */
+  .option-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 1.5rem 0;
+    width: 100%;
+  }
+  .option-pill {
+    padding: 0.9rem 1rem;
+    border: 0.5px solid #e0d4d8;
+    border-radius: 12px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    background: #fff;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .option-pill:hover { border-color: var(--rose); color: var(--rose); }
+  .option-pill.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .option-pill.selected {
+    border-color: var(--rose);
+    background: var(--rose-lt);
+    color: var(--rose);
+  }
+  .option-pill .pill-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .btn-next {
+    display: inline-block;
+    padding: 0.75rem 2.5rem;
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Jost', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    opacity: 0;
+    pointer-events: none;
+    margin-top: 0.5rem;
+  }
+  .btn-next.visible { opacity: 1; pointer-events: all; }
+  .btn-next:hover { background: #b5627a; transform: scale(1.03); }
+
+  /* ── SCREEN 4 – SUCCESS ──────────────────────────── */
+  .heart-big {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    animation: heartbeat 1.2s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14%       { transform: scale(1.15); }
+    28%       { transform: scale(1); }
+    42%       { transform: scale(1.1); }
+    56%       { transform: scale(1); }
+  }
+
+  .summary-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    color: var(--muted);
+    margin: 0.3rem 0;
+    font-style: italic;
+  }
+  .summary-line strong {
+    color: var(--rose);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  /* ── FADE TRANSITION ─────────────────────────────── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .card { animation: fadeIn 0.5s ease both; }
+</style>
+</head>
+<body>
+
+<!-- Petals -->
+<div class="petals" id="petals"></div>
+
+<!-- ── SCREEN 1: Ja/Nein ── -->
+<div class="screen active" id="s1">
+  <div class="card">
+    <p class="eyebrow">Eine bescheidene Frage</p>
+    <h1>Willst du mit mir<br><em>auf ein Date?</em></h1>
+    <div class="divider"></div>
+    <p class="sub">Denk nicht zu lang nach.</p>
+    <div class="btn-wrap" id="btnWrap">
+      <button class="btn-yes" onclick="goToS2()">Ja, sehr gerne ♡</button>
+      <button class="btn-no" id="noBtn" onmouseenter="runAway()" ontouchstart="runAway()">Lieber nicht</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCREEN 2: Datum & Uhrzeit ── -->
+<div class="screen" id="s2">
+  <div class="card">
+    <p class="eyebrow">Schritt 1 von 2</p>
+    <h1>Wann passt<br><em>es dir?</em></h1>
+    <div class="divider"></div>
+    <div class="option-grid">
+      <div class="option-pill disabled">
+        <span class="pill-label">Datum</span>
+        Montag<br>16:00 Uhr
+      </div>
+      <div class="option-pill disabled">
+        <span class="pill-label">Datum</span>
+        Mittwoch<br>19:00 Uhr
+      </div>
+      <div class="option-pill" id="dateOpt" onclick="selectDate(this)">
+        <span class="pill-label">Datum</span>
+        Freitag<br>18:30 Uhr
+      </div>
+      <div class="option-pill disabled">
+        <span class="pill-label">Datum</span>
+        Samstag<br>12:00 Uhr
+      </div>
+    </div>
+    <button class="btn-next" id="nextDate" onclick="goToS3()">Weiter →</button>
+  </div>
+</div>
+
+<!-- ── SCREEN 3: Was machen wir ── -->
+<div class="screen" id="s3">
+  <div class="card">
+    <p class="eyebrow">Schritt 2 von 2</p>
+    <h1>Was sollen<br><em>wir machen?</em></h1>
+    <div class="divider"></div>
+    <div class="option-grid">
+      <div class="option-pill disabled">
+        <span class="pill-label">Aktivität</span>
+        Kino
+      </div>
+      <div class="option-pill" id="actOpt" onclick="selectAct(this)">
+        <span class="pill-label">Aktivität</span>
+        Essen gehen
+      </div>
+      <div class="option-pill disabled">
+        <span class="pill-label">Aktivität</span>
+        Spazieren
+      </div>
+      <div class="option-pill disabled">
+        <span class="pill-label">Aktivität</span>
+        Bowling
+      </div>
+    </div>
+    <button class="btn-next" id="nextAct" onclick="goToS4()">Bestätigen →</button>
+  </div>
+</div>
+
+<!-- ── SCREEN 4: Erfolg ── -->
+<div class="screen" id="s4">
+  <div class="card">
+    <div class="heart-big">♡</div>
+    <p class="eyebrow">Es ist offiziell</p>
+    <h1><em>Ich freu mich<br>so sehr!</em></h1>
+    <div class="divider"></div>
+    <p class="summary-line">Wann: <strong>Freitag, 18:30 Uhr</strong></p>
+    <p class="summary-line">Was: <strong>Essen gehen</strong></p>
+    <p class="sub" style="margin-top:1.5rem;">Ich zähle schon die Stunden. ♡</p>
+  </div>
+</div>
+
+<script>
+  /* ── Petals ── */
+  const petalContainer = document.getElementById('petals');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (8 + Math.random() * 10) + 's';
+    p.style.animationDelay = (Math.random() * 12) + 's';
+    p.style.width = (8 + Math.random() * 8) + 'px';
+    p.style.height = (10 + Math.random() * 10) + 'px';
+    p.style.opacity = 0;
+    petalContainer.appendChild(p);
+  }
+
+  /* ── No-button runaway ── */
+  let noCount = 0;
+  const noBtn = document.getElementById('noBtn');
+  const wrap  = document.getElementById('btnWrap');
+
+  function runAway() {
+    noCount++;
+    const wr = wrap.getBoundingClientRect();
+    const nb = noBtn.getBoundingClientRect();
+    const maxX = wr.width  - nb.width;
+    const maxY = wr.height - nb.height;
+    noBtn.style.left = Math.max(0, Math.random() * maxX) + 'px';
+    noBtn.style.top  = Math.max(0, Math.random() * maxY) + 'px';
+    if (noCount >= 4) noBtn.style.fontSize = Math.max(9, 14 - noCount * 1.5) + 'px';
+    if (noCount >= 8) noBtn.style.display = 'none';
+  }
+
+  /* ── Screen transitions ── */
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function goToS2() { show('s2'); }
+  function goToS3() { show('s3'); }
+  function goToS4() { show('s4'); }
+
+  /* ── Date selection ── */
+  function selectDate(el) {
+    el.classList.toggle('selected');
+    document.getElementById('nextDate').classList.toggle('visible', el.classList.contains('selected'));
+  }
+
+  /* ── Activity selection ── */
+  function selectAct(el) {
+    el.classList.toggle('selected');
+    document.getElementById('nextAct').classList.toggle('visible', el.classList.contains('selected'));
+  }
+</script>
+</body>
+</html>
