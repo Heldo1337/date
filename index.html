@@ -391,20 +391,20 @@
     selectedTime = val;
     document.getElementById('summaryTime').textContent = 'Freitag, ' + val;
     document.getElementById('nextTime').classList.add('visible');
-  }
-
-  function submitAndFinish() {
-    fetch('https://formspree.io/f/xgojzppr', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        uhrzeit: selectedTime,
-        aktivitaet: 'Essen gehen',
-        nachricht: 'Sie hat bestaetigt! Uhrzeit: ' + selectedTime
-      })
-    }).catch(() => {});
-    goTo('s4');
-  }
+/*
+function submitAndFinish() {
+  fetch('https://formspree.io/f/xgojzppr', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      uhrzeit: selectedTime,
+      aktivitaet: 'Essen gehen',
+      nachricht: 'Sie hat bestaetigt! Uhrzeit: ' + selectedTime
+    })
+  }).catch(() => {});
+  goTo('s4');
+}
+*/
 </script>
 </body>
 </html>
